@@ -17,7 +17,6 @@ ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
 
 COPY --from=builder /var/build/init.sh /usr/local/bin/
-COPY --from=builder /var/build/sshd_config /etc/ssh/
 COPY --from=builder /var/build/packages/bot/ /var/bot/
 COPY --from=builder /var/build/packages/app/build/ /var/bot/public/
 
@@ -28,6 +27,8 @@ RUN \
   && apt-get install -y --no-install-recommends openssh-server \
   && echo "$SSH_PASSWD" | chpasswd \
   && chmod u+x /usr/local/bin/init.sh
+
+COPY --from=builder /var/build/sshd_config /etc/ssh/
 
 # Set up entrypoint
 ENTRYPOINT /usr/local/bin/init.sh
