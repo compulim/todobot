@@ -1,0 +1,30 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel --out-dir lib src",
+    "start": "concurrently --kill-others --names \"build,start\" \"npm run build -- --watch\" \"npm run start:bot\"",
+    "start:bot": "node-dev --respawn .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "William Wong <compulim@hotmail.com> (http://compulim.info/)",
+  "license": "MIT",
+  "dependencies": {
+    "botbuilder": "^4.5.3",
+    "botframework-connector": "^4.5.3",
+    "dotenv": "^8.1.0",
+    "math-random": "^1.0.4",
+    "node-fetch": "^2.6.0",
+    "restify": "^8.4.0",
+    "serve-handler": "^6.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "node-dev": "^4.0.0"
+  }
+}
