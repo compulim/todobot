@@ -4,6 +4,7 @@ import { BotFrameworkAdapter } from 'botbuilder';
 import { MicrosoftAppCredentials } from 'botframework-connector';
 import { join } from 'path';
 import fetch from 'node-fetch';
+import prettyMs from 'pretty-ms';
 import restify from 'restify';
 import serveHandler from 'serve-handler';
 
@@ -47,7 +48,7 @@ const adapter = new BotFrameworkAdapter({
 let numActivities = 0;
 const up = Date.now();
 
-server.get('/', async (_, res) => {
+server.get('/ready.txt', async (_, res) => {
   const message = `TodoBot v4 is up since ${ prettyMs(Date.now() - up) } ago, processed ${ numActivities } activities.`;
   const separator = new Array(message.length).fill('-').join('');
 
@@ -150,8 +151,8 @@ server.post('/api/messages', (req, res) => {
   });
 });
 
-server.get('/*', async (req, res) => {
+server.get('/**/*', async (req, res) => {
   await serveHandler(req, res, {
-    path: join(__dirname, './public')
+    public: join(__dirname, '../public')
   });
 });

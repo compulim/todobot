@@ -3,5 +3,9 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.5.1"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "prepublishOnly": "lerna run build"
   }
 }
