@@ -2,7 +2,6 @@ import { css } from 'glamor';
 import { useDispatch } from 'react-redux';
 import React, { useCallback, useState } from 'react';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-// import { IconButton } from 'office-ui-fabric-react/lib/Button';
 
 import addTask from './data/action/addTask';
 

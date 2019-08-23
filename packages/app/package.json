@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "@uifabric/icons": "^7.1.2",
-    "botframework-webchat": "^4.5.2",
+    "botframework-webchat": "file:botframework-webchat-0.0.0-0.tgz",
+    "botframework-webchat-component": "file:botframework-webchat-component-0.0.0-0.tgz",
+    "botframework-webchat-core": "file:botframework-webchat-core-0.0.0-0.tgz",
     "classnames": "^2.2.6",
     "glamor": "^2.20.40",
     "math-random": "^1.0.4",

@@ -9,7 +9,7 @@ import fetchSpeechServicesRegion from './util/fetchSpeechServicesRegion';
 import fetchSpeechServicesToken from './util/fetchSpeechServicesToken';
 
 const WEB_CHAT_BOX = css({
-  boxShadow: '0 0 10px rgba(0, 0, 0, .1)',
+  fontSize: 20,
   height: 'calc(100% - 20px)',
   margin: 10,
   position: 'fixed',
@@ -23,11 +23,24 @@ const WEB_CHAT_BOX = css({
 
   '&:not(.centered)': {
     right: 0
+  },
+
+  '& > *': {
+    borderRadius: 5,
+    boxShadow: '0 0 10px rgba(0, 0, 0, .1)',
+    overflow: 'hidden'
   }
 });
 
 const WEB_CHAT_STYLE_OPTIONS = {
-  bubbleNubSize: 5
+  backgroundColor: '#F7F7F7',
+  bubbleBorderRadius: 5,
+  bubbleFromUserBorderRadius: 5,
+  bubbleFromUserNubOffset: 10,
+  bubbleFromUserNubSize: 15,
+  bubbleNubOffset: 10,
+  bubbleNubSize: 10,
+  sendBoxHeight: 50
 };
 
 export default function WebChat() {
