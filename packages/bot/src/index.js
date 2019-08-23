@@ -8,7 +8,7 @@ import prettyMs from 'pretty-ms';
 import restify from 'restify';
 import serveHandler from 'serve-handler';
 
-import Bot from './bot';
+import Bot from './Bot';
 import generateDirectLineToken from './generateDirectLineToken';
 import renewDirectLineToken from './renewDirectLineToken';
 
@@ -16,7 +16,7 @@ const {
   DIRECT_LINE_SECRET,
   MICROSOFT_APP_ID,
   MICROSOFT_APP_PASSWORD,
-  PORT,
+  PORT = 80,
   SPEECH_SERVICES_REGION,
   SPEECH_SERVICES_SUBSCRIPTION_KEY
 } = process.env;
