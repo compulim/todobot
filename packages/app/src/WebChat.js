@@ -66,8 +66,14 @@ export default function WebChat() {
     return () => {};
   }, [setDirectLine]);
 
+  React.useLayoutEffect(() => {
+    const sendBox = document.querySelector('[data-id="webchat-sendbox-input"]');
+
+    sendBox && sendBox.focus();
+  }, [directLine, webSpeechPonyfillFactory]);
+
   return (
-    !!directLine &&
+    !!(directLine && webSpeechPonyfillFactory) &&
       <div className={classNames(WEB_CHAT_BOX + '', { centered: !taskListVisibility })}>
         <ReactWebChat
           directLine={directLine}

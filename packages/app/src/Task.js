@@ -19,6 +19,9 @@ const ROOT_CSS = css({
   '& > .text': {
     flex: 1,
     fontFamily: '\'Segoe Script\', serif',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
 
     '&.completed': {
       textDecoration: 'line-through'
