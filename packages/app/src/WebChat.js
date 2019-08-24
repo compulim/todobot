@@ -7,6 +7,7 @@ import ReactWebChat, { createCognitiveServicesSpeechServicesPonyfillFactory, cre
 import fetchDirectLineToken from './util/fetchDirectLineToken';
 import fetchSpeechServicesRegion from './util/fetchSpeechServicesRegion';
 import fetchSpeechServicesToken from './util/fetchSpeechServicesToken';
+import receiveActivity from './data/action/receiveActivity';
 
 const WEB_CHAT_BOX = css({
   fontSize: 20,
@@ -48,17 +49,9 @@ export default function WebChat() {
   const taskListVisibility = useSelector(({ taskListVisibility }) => taskListVisibility);
   const [directLine, setDirectLine] = useState();
   const [webSpeechPonyfillFactory, setWebSpeechPonyfillFactory] = useState();
-  const handleIncomingActivity = useCallback(activity => {
-    if (activity.type === 'event' && activity.name === 'redux action') {
-      dispatch(activity.value);
-    }
-  }, [dispatch]);
+  const handleIncomingActivity = useCallback(activity => dispatch(receiveActivity(activity)), [dispatch]);
   const [webChatStore] = useState(createStore({}, () => next => action => {
-    const { payload, type } = action;
-
-    if (type === 'DIRECT_LINE/INCOMING_ACTIVITY') {
-      handleIncomingActivity(payload.activity);
-    }
+    action.type === 'DIRECT_LINE/INCOMING_ACTIVITY' && handleIncomingActivity(action.payload.activity);
 
     return next(action);
   }));
