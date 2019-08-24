@@ -82,6 +82,7 @@ function trustedOrigin(origin) {
     || /^https?:\/\/([\d\w]+\.)+botframework\.com(\/|$)/.test(origin)
     || /^https:\/\/compulim\.github\.io(\/|$)/.test(origin)
     || /^https:\/\/microsoft\.github\.io(\/|$)/.test(origin)
+    || /^https:\/\/webchat-todobot\.azurewebsites\.net(\/|$)/.test(origin)
 
     // This is CodePen
     || /^https:\/\/cdpn\.io(\/|$)/.test(origin)
