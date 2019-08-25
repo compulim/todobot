@@ -20,6 +20,7 @@ const ROOT_CSS = css({
 
   '@media (max-width: 480px)': {
     backgroundColor: '#F0F0F0',
+    backgroundImage: 'none',
 
     '& > .task-list': {
       display: 'none'

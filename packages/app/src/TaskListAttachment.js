@@ -7,7 +7,7 @@ import markTaskAsCompleted from './data/action/markTaskAsCompleted';
 import markTaskAsIncompleted from './data/action/markTaskAsIncompleted';
 
 const ROOT_CSS = css({
-  backgroundColor: '#FFD',
+  backgroundColor: '#EFE',
   fontFamily: ['Calibri', 'Helvetica Neue', 'Arial', 'sans-serif'].map(name => `'${ name }'`).join(', '),
   padding: 10,
   position: 'relative',

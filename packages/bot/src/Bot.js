@@ -1,6 +1,35 @@
 import { ActivityHandler } from 'botbuilder';
 import random from 'math-random';
 
+const SUGGESTED_ACTIONS = {
+  to: null,
+  actions: [{
+    type: 'imBack',
+    value: 'What is on my list?'
+  }, {
+    type: 'imBack',
+    value: 'I need to buy magazines.'
+  }, {
+    type: 'imBack',
+    value: 'Mark buy magazines as completed.'
+  }]
+};
+
+async function sendHelp(context) {
+  await context.sendActivity({
+    speak: 'You could say, "what is on my list?", "I need to buy magazines", or "mark buy magazines as completed."',
+    suggestedActions: SUGGESTED_ACTIONS,
+    text: [
+      'You could say:',
+      '',
+      '- What is on my list?',
+      '- I need to buy magazines.',
+      '- Mark buy magazines as completed.',
+    ].join('\n'),
+    type: 'message',
+  });
+}
+
 async function sendReduxEvent(context, action) {
   await context.sendActivity({
     name: 'redux action',
@@ -16,7 +45,7 @@ export default class Bot extends ActivityHandler {
     this.onMembersAdded(async (context, next) => {
       await context.sendActivity({
         attachments: [{
-          contentType: 'x-todobot-tasks'
+          contentType: 'x-todobot-tasks',
         }],
         text: [
           'Hello, William! Here are your tasks.'
@@ -24,22 +53,7 @@ export default class Bot extends ActivityHandler {
         type: 'message'
       });
 
-      await context.sendActivity([
-        'You could say:',
-        '',
-        '- What is on my list?',
-        '- I need to buy magazines.',
-        '- Mark buy magazines as completed.',
-      ].join('\n'));
-
-      // await context.sendActivity({
-      //   name: 'redux select',
-      //   type: 'event',
-      //   value: {
-      //     state: 'welcome'
-      //   }
-      // });
-
+      await sendHelp(context);
       await next();
     });
 
@@ -107,7 +121,7 @@ export default class Bot extends ActivityHandler {
           await context.sendActivity(`Marking "${ text }" as incomplete.`);
         }
       } else if (/^(delete|remove)\s/iu.test(activity.text)) {
-        const text = activity.text.substr(7).replace(/\sfrom\s(my\s)?list\.?$/iu, '').trim();
+        const text = activity.text.substr(7).replace(/\sfrom\s((my|the)\s)?list\.?$/iu, '').trim();
 
         await sendReduxEvent(context, {
           payload: { text },
@@ -125,6 +139,8 @@ export default class Bot extends ActivityHandler {
         });
 
         await sendReduxEvent(context, { type: 'SHOW_TASK_LIST' });
+      } else if (/^help(\s|$)/iu.test(activity.text)) {
+        await sendHelp(context);
       } else {
         await context.sendActivity(`Sorry, I don't know what you said.`);
       }

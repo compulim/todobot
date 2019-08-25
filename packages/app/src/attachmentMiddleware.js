@@ -5,11 +5,11 @@ import TaskListAttachment from './TaskListAttachment';
 export default () => next => card => {
   const { attachment: { contentType } } = card;
 
-  if (contentType === 'x-todobot-tasks') {
-    return (
-      <TaskListAttachment />
-    )
-  } else {
-    return next(card);
+  switch (contentType) {
+    case 'x-todobot-tasks':
+      return <TaskListAttachment />;
+
+    default:
+      return next(card);
   }
 }

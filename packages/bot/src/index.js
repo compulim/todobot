@@ -48,6 +48,26 @@ const adapter = new BotFrameworkAdapter({
 let numActivities = 0;
 const up = Date.now();
 
+function trustedOrigin(origin) {
+  return (
+    /^https?:\/\/localhost([\/:]|$)/.test(origin)
+
+    // This is for Docker tests
+    || /^https?:\/\/webchat([\/:]|$)/.test(origin)
+
+    || /^https?:\/\/[\d\w]+\.ngrok\.io(\/|$)/.test(origin)
+    || /^https?:\/\/([\d\w]+\.)+botframework\.com(\/|$)/.test(origin)
+    || /^https:\/\/compulim\.github\.io(\/|$)/.test(origin)
+    || /^https:\/\/microsoft\.github\.io(\/|$)/.test(origin)
+    || /^https:\/\/todobot\.azurewebsites\.net(\/|$)/.test(origin)
+    || /^https:\/\/webchat-todobot\.azurewebsites\.net(\/|$)/.test(origin)
+
+    // This is CodePen
+    || /^https:\/\/cdpn\.io(\/|$)/.test(origin)
+    || /^https:\/\/s\.codepen\.io(\/|$)/.test(origin)
+  );
+}
+
 server.get('/ready.txt', async (_, res) => {
   const message = `TodoBot v4 is up since ${ prettyMs(Date.now() - up) } ago, processed ${ numActivities } activities.`;
   const separator = new Array(message.length).fill('-').join('');
@@ -70,26 +90,6 @@ server.get('/health.txt', async (req, res) => {
   res.set('Content-Type', 'text/plain');
   res.send('OK');
 });
-
-function trustedOrigin(origin) {
-  return (
-    /^https?:\/\/localhost([\/:]|$)/.test(origin)
-
-    // This is for Docker tests
-    || /^https?:\/\/webchat([\/:]|$)/.test(origin)
-
-    || /^https?:\/\/[\d\w]+\.ngrok\.io(\/|$)/.test(origin)
-    || /^https?:\/\/([\d\w]+\.)+botframework\.com(\/|$)/.test(origin)
-    || /^https:\/\/compulim\.github\.io(\/|$)/.test(origin)
-    || /^https:\/\/microsoft\.github\.io(\/|$)/.test(origin)
-    || /^https:\/\/todobot\.azurewebsites\.net(\/|$)/.test(origin)
-    || /^https:\/\/webchat-todobot\.azurewebsites\.net(\/|$)/.test(origin)
-
-    // This is CodePen
-    || /^https:\/\/cdpn\.io(\/|$)/.test(origin)
-    || /^https:\/\/s\.codepen\.io(\/|$)/.test(origin)
-  );
-}
 
 server.post('/api/directline/token', async (req, res) => {
   const origin = req.header('origin');
