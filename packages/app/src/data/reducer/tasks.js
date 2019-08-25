@@ -18,7 +18,7 @@ const DEFAULT_STATE = [
 ];
 
 function taskLike({ text }, pattern) {
-  return compareTwoStrings(text, pattern) > .8
+  return compareTwoStrings(text, pattern) > .8;
 }
 
 function selectTaskByPayload(payload) {

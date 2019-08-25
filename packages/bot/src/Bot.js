@@ -1,4 +1,5 @@
 import { ActivityHandler } from 'botbuilder';
+import { compareTwoStrings } from 'string-similarity';
 import random from 'math-random';
 
 const SUGGESTED_ACTIONS = {
@@ -14,6 +15,10 @@ const SUGGESTED_ACTIONS = {
     value: 'Mark buy magazines as completed.'
   }]
 };
+
+function taskLike({ text }, pattern) {
+  return compareTwoStrings(text, pattern) > .8;
+}
 
 async function sendHelp(context) {
   await context.sendActivity({
@@ -91,49 +96,74 @@ export default class Bot extends ActivityHandler {
         const text = activity.text.replace(/^((i\sneed\sto)|(add))\s/iu, '').replace(/\sto\s((my|the)\s)?list\.?$/iu, '').trim();
         const [firstChar, ...otherChars] = text.replace(/\.$/, '');
         const cleanText = [firstChar.toUpperCase(), ...otherChars].join('');
+        const existingTask = activity.channelData.reduxStore.tasks.find(task => taskLike(task, cleanText));
 
-        await sendReduxEvent(context, {
-          payload: {
-            id: `t-${ random().toString(36).substr(2, 5) }`,
-            text: cleanText
-          },
-          type: 'ADD_TASK'
-        });
+        if (existingTask) {
+          await context.sendActivity(`You already added the task "${ existingTask.text }".`);
+        } else {
+          await sendReduxEvent(context, {
+            payload: {
+              id: `t-${ random().toString(36).substr(2, 5) }`,
+              text: cleanText
+            },
+            type: 'ADD_TASK'
+          });
 
-        await context.sendActivity(`Okay, adding "${ cleanText }" to your list.`);
+          await context.sendActivity(`Okay, adding "${ cleanText }" to your list.`);
+        }
       } else if (/^mark\s/iu.test(activity.text)) {
         const text = activity.text.substr(5).replace(/\sas\s(in)?((completed?)|(finish(ed)?))\.?$/iu, '').trim();
         const completed = !/((incompleted?)|(unfinish(ed)?))\.?$/iu.test(activity.text);
+        const existingTask = activity.channelData.reduxStore.tasks.find(task => taskLike(task, text));
 
-        if (completed) {
-          await sendReduxEvent(context, {
-            payload: { text },
-            type: 'MARK_TASK_AS_COMPLETED'
-          });
+        if (!existingTask) {
+          await context.sendActivity(`No task was named "${ text }".`);
+        } else if (completed) {
+          if (existingTask.completed) {
+            await context.sendActivity(`"${ existingTask.text }" is already completed.`);
+          } else {
+            await sendReduxEvent(context, {
+              payload: { id: existingTask.id },
+              type: 'MARK_TASK_AS_COMPLETED'
+            });
 
-          await context.sendActivity(`Marking "${ text }" as completed.`);
+            await context.sendActivity(`Marking "${ existingTask.text }" as completed.`);
+          }
         } else {
-          await sendReduxEvent(context, {
-            payload: { text },
-            type: 'MARK_TASK_AS_INCOMPLETED'
-          });
+          if (!existingTask.completed) {
+            await context.sendActivity(`"${ existingTask.text }" is not completed.`);
+          } else {
+            await sendReduxEvent(context, {
+              payload: { id: existingTask.id },
+              type: 'MARK_TASK_AS_INCOMPLETED'
+            });
 
-          await context.sendActivity(`Marking "${ text }" as incomplete.`);
+            await context.sendActivity(`Marking "${ existingTask.text }" as incomplete.`);
+          }
         }
       } else if (/^(delete|remove)\s/iu.test(activity.text)) {
         const text = activity.text.substr(7).replace(/\sfrom\s((my|the)\s)?list\.?$/iu, '').trim();
+        const existingTask = activity.channelData.reduxStore.tasks.find(task => taskLike(task, text));
 
-        await sendReduxEvent(context, {
-          payload: { text },
-          type: 'DELETE_TASK'
-        });
+        if (!existingTask) {
+          await context.sendActivity(`No task was named "${ text }".`);
+        } else {
+          await sendReduxEvent(context, {
+            payload: { id: existingTask.id },
+            type: 'DELETE_TASK'
+          });
 
-        await context.sendActivity(`Deleting "${ text }" from your list.`);
+          await context.sendActivity(`Deleting "${ existingTask.text }" from your list.`);
+        }
       } else if (/^(show|what).*?(lists?|tasks?)[\.\?]?$/iu.test(activity.text)) {
         await context.sendActivity({
           attachments: [{
             contentType: 'x-todobot-tasks'
           }],
+          speak: [
+            'Here is your list.<break strength="medium" />',
+            activity.channelData.reduxStore.tasks.map(task => `${ task.text } is ${ task.completed ? 'done' : 'not done' }.`).join('\n<break strength="weak" />')
+          ].join(''),
           text: 'Here is your list.',
           type: 'message'
         });
