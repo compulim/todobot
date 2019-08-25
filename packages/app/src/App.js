@@ -1,6 +1,4 @@
 import { css } from 'glamor';
-import { useSelector } from 'react-redux';
-import classNames from 'classnames';
 import React from 'react';
 
 // import AddTaskBox from './AddTaskBox';
@@ -8,25 +6,25 @@ import Tasks from './Tasks';
 import WebChat from './WebChat';
 
 const ROOT_CSS = css({
+  backgroundColor: 'White',
+  backgroundImage: 'url(/background.svg)',
   display: 'flex',
   height: '100%',
   justifyContent: 'center',
 
-  '&.task-list-visible': {
-    backgroundColor: 'White',
-    backgroundImage: 'url(/background.svg)'
+  '> .task-list': {
+    flex: 1,
+    height: '100%',
+    overflow: 'hidden'
   },
 
-  '&:not(.task-list.visible)': {
-    backgroundColor: '#F0F0F0'
-  }
-});
+  '@media (max-width: 480px)': {
+    backgroundColor: '#F0F0F0',
 
-const TASK_LIST_CSS = css({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%'
+    '& > .task-list': {
+      display: 'none'
+    }
+  }
 });
 
 const TASKS_CSS = css({
@@ -34,17 +32,12 @@ const TASKS_CSS = css({
 });
 
 export default function App() {
-  const taskListVisibility = useSelector(({ taskListVisibility }) => taskListVisibility);
-
   return (
-    <div className={ classNames(ROOT_CSS + '', { 'task-list-visible': taskListVisibility }) }>
-      {
-        !!taskListVisibility &&
-          <div className={ TASK_LIST_CSS }>
-            <Tasks className={ TASKS_CSS + '' } />
-            {/* <AddTaskBox /> */}
-          </div>
-      }
+    <div className={ROOT_CSS}>
+      <div className="task-list">
+        <Tasks className={ TASKS_CSS + '' } />
+        {/* <AddTaskBox /> */}
+      </div>
       <WebChat />
     </div>
   );

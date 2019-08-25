@@ -1,10 +1,10 @@
 import { css } from 'glamor';
 import { useDispatch, useSelector } from 'react-redux';
-import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactWebChat, { createCognitiveServicesSpeechServicesPonyfillFactory, createDirectLine, createStore } from 'botframework-webchat';
 import updateIn from 'simple-update-in';
 
+import attachmentMiddleware from './attachmentMiddleware';
 import fetchDirectLineToken from './util/fetchDirectLineToken';
 import fetchSpeechServicesRegion from './util/fetchSpeechServicesRegion';
 import fetchSpeechServicesToken from './util/fetchSpeechServicesToken';
@@ -12,19 +12,24 @@ import receiveActivity from './data/action/receiveActivity';
 import setDirectLine from './data/action/setDirectLine';
 
 const WEB_CHAT_BOX = css({
-  fontSize: 20,
-  height: 'calc(100% - 20px)',
-  margin: 10,
-  width: 420,
+  boxShadow: '0 0 10px rgba(0, 0, 0, .1)',
+  display: 'flex',
+  width: '100%',
 
-  '&:not(.centered)': {
-    right: 0
+  '@media (min-width: 481px)': {
+    height: 'calc(100% - 20px)',
+    margin: 10,
+    width: 320,
+
+    // '& > *': {
+    //   minWidth: 320
+    // }
   },
 
   '& > *': {
     borderRadius: 5,
-    boxShadow: '0 0 10px rgba(0, 0, 0, .1)',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    width: '100%'
   }
 });
 
@@ -41,7 +46,7 @@ const WEB_CHAT_STYLE_OPTIONS = {
 
 export default function WebChat() {
   const dispatch = useDispatch();
-  const { directLine, taskListVisibility, tasks } = useSelector(({ directLine, taskListVisibility, tasks }) => ({ directLine, taskListVisibility, tasks }));
+  const { directLine, tasks } = useSelector(({ directLine, tasks }) => ({ directLine, tasks }));
   const [webSpeechPonyfillFactory, setWebSpeechPonyfillFactory] = useState();
   const handleIncomingActivity = useCallback(activity => dispatch(receiveActivity(activity)), [dispatch]);
   const middleware = useRef(() => next => action => next(action));
@@ -54,7 +59,7 @@ export default function WebChat() {
         action = updateIn(
           action,
           ['payload', 'activity', 'channelData', 'reduxStore'],
-          () => ({ tasks, taskListVisibility })
+          () => ({ tasks })
         );
       }
 
@@ -90,8 +95,9 @@ export default function WebChat() {
 
   return (
     !!(directLine && webSpeechPonyfillFactory) &&
-      <div className={classNames(WEB_CHAT_BOX + '', { centered: !taskListVisibility })}>
+      <div className={WEB_CHAT_BOX}>
         <ReactWebChat
+          attachmentMiddleware={attachmentMiddleware}
           directLine={directLine}
           store={webChatStore}
           styleOptions={WEB_CHAT_STYLE_OPTIONS}

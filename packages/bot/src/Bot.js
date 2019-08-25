@@ -14,27 +14,31 @@ export default class Bot extends ActivityHandler {
     super();
 
     this.onMembersAdded(async (context, next) => {
+      await context.sendActivity({
+        attachments: [{
+          contentType: 'x-todobot-tasks'
+        }],
+        text: [
+          'Hello, William! Here are your tasks.'
+        ].join('\n'),
+        type: 'message'
+      });
+
       await context.sendActivity([
-        'Hello, William!',
-        '',
-        'You can say:',
+        'You could say:',
         '',
         '- What is on my list?',
-        '- I need to buy milk.',
-        '- Mark buy milk as completed.',
-        '',
-        'Let me find out what is on your list, hold on.'
+        '- I need to buy magazines.',
+        '- Mark buy magazines as completed.',
       ].join('\n'));
 
-      await context.sendActivity({ type: 'typing' });
-
-      await context.sendActivity({
-        name: 'redux select',
-        type: 'event',
-        value: {
-          state: 'welcome'
-        }
-      });
+      // await context.sendActivity({
+      //   name: 'redux select',
+      //   type: 'event',
+      //   value: {
+      //     state: 'welcome'
+      //   }
+      // });
 
       await next();
     });
@@ -71,7 +75,7 @@ export default class Bot extends ActivityHandler {
 
       if (/^((i\sneed\sto)|(add))\s/iu.test(activity.text)) {
         const text = activity.text.replace(/^((i\sneed\sto)|(add))\s/iu, '').replace(/\sto\s((my|the)\s)?list\.?$/iu, '').trim();
-        const [firstChar, ...otherChars] = text;
+        const [firstChar, ...otherChars] = text.replace(/\.$/, '');
         const cleanText = [firstChar.toUpperCase(), ...otherChars].join('');
 
         await sendReduxEvent(context, {
@@ -112,9 +116,15 @@ export default class Bot extends ActivityHandler {
 
         await context.sendActivity(`Deleting "${ text }" from your list.`);
       } else if (/^(show|what).*?(lists?|tasks?)[\.\?]?$/iu.test(activity.text)) {
-        await sendReduxEvent(context, { type: 'SHOW_TASK_LIST' });
+        await context.sendActivity({
+          attachments: [{
+            contentType: 'x-todobot-tasks'
+          }],
+          text: 'Here is your list.',
+          type: 'message'
+        });
 
-        await context.sendActivity('Here is your tasks.');
+        await sendReduxEvent(context, { type: 'SHOW_TASK_LIST' });
       } else {
         await context.sendActivity(`Sorry, I don't know what you said.`);
       }
