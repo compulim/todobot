@@ -1,8 +1,9 @@
 import { css } from 'glamor';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactWebChat, { createCognitiveServicesSpeechServicesPonyfillFactory, createDirectLine, createStore } from 'botframework-webchat';
+import updateIn from 'simple-update-in';
 
 import fetchDirectLineToken from './util/fetchDirectLineToken';
 import fetchSpeechServicesRegion from './util/fetchSpeechServicesRegion';
@@ -40,14 +41,30 @@ const WEB_CHAT_STYLE_OPTIONS = {
 
 export default function WebChat() {
   const dispatch = useDispatch();
-  const { directLine, taskListVisibility } = useSelector(({ directLine, taskListVisibility }) => ({ directLine, taskListVisibility }));
+  const { directLine, taskListVisibility, tasks } = useSelector(({ directLine, taskListVisibility, tasks }) => ({ directLine, taskListVisibility, tasks }));
   const [webSpeechPonyfillFactory, setWebSpeechPonyfillFactory] = useState();
   const handleIncomingActivity = useCallback(activity => dispatch(receiveActivity(activity)), [dispatch]);
-  const [webChatStore] = useState(createStore({}, () => next => action => {
-    action.type === 'DIRECT_LINE/INCOMING_ACTIVITY' && handleIncomingActivity(action.payload.activity);
+  const middleware = useRef(() => next => action => next(action));
 
-    return next(action);
-  }));
+  useEffect(() => {
+    middleware.current = () => next => action => {
+      if (action.type === 'DIRECT_LINE/INCOMING_ACTIVITY') {
+        handleIncomingActivity(action.payload.activity);
+      } else if (action.type === 'DIRECT_LINE/POST_ACTIVITY') {
+        action = updateIn(
+          action,
+          ['payload', 'activity', 'channelData', 'reduxStore'],
+          () => ({ tasks, taskListVisibility })
+        );
+      }
+
+      return next(action);
+    };
+
+    return () => {};
+  }, [handleIncomingActivity, tasks]);
+
+  const [webChatStore] = useState(createStore({}, store => next => action => middleware.current(store)(next)(action)));
 
   useEffect(() => {
     (async function () {
