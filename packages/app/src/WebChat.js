@@ -19,11 +19,7 @@ const WEB_CHAT_BOX = css({
   '@media (min-width: 481px)': {
     height: 'calc(100% - 20px)',
     margin: 10,
-    width: 320,
-
-    // '& > *': {
-    //   minWidth: 320
-    // }
+    width: 320
   },
 
   '& > *': {
@@ -113,7 +109,6 @@ export default function WebChat() {
           attachmentMiddleware={attachmentMiddleware}
           directLine={directLine}
           store={webChatStore}
-          // styleOptions={WEB_CHAT_STYLE_OPTIONS}
           styleSet={WEB_CHAT_STYLE_SET}
           webSpeechPonyfillFactory={webSpeechPonyfillFactory}
         />
