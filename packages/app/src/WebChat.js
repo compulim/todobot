@@ -1,7 +1,7 @@
 import { css } from 'glamor';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactWebChat, { createCognitiveServicesSpeechServicesPonyfillFactory, createDirectLine, createStore } from 'botframework-webchat';
+import ReactWebChat, { createCognitiveServicesSpeechServicesPonyfillFactory, createDirectLine, createStore, createStyleSet } from 'botframework-webchat';
 import updateIn from 'simple-update-in';
 
 import attachmentMiddleware from './attachmentMiddleware';
@@ -42,6 +42,19 @@ const WEB_CHAT_STYLE_OPTIONS = {
   bubbleNubOffset: 10,
   bubbleNubSize: 10,
   sendBoxHeight: 50
+};
+
+const WEB_CHAT_STYLE_SET = {
+  ...createStyleSet(WEB_CHAT_STYLE_OPTIONS),
+  microphoneButton: {
+    '&.dictating > button': {
+      '&:active, &:focus, &:hover': {
+        '& svg': {
+          fill: '#F33'
+        }
+      }
+    }
+  }
 };
 
 export default function WebChat() {
@@ -100,7 +113,8 @@ export default function WebChat() {
           attachmentMiddleware={attachmentMiddleware}
           directLine={directLine}
           store={webChatStore}
-          styleOptions={WEB_CHAT_STYLE_OPTIONS}
+          // styleOptions={WEB_CHAT_STYLE_OPTIONS}
+          styleSet={WEB_CHAT_STYLE_SET}
           webSpeechPonyfillFactory={webSpeechPonyfillFactory}
         />
       </div>
