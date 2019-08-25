@@ -14,7 +14,7 @@ const WEB_CHAT_BOX = css({
   fontSize: 20,
   height: 'calc(100% - 20px)',
   margin: 10,
-  width: 360,
+  width: 420,
 
   '&:not(.centered)': {
     right: 0
