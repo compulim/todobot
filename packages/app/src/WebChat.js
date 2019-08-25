@@ -8,19 +8,13 @@ import fetchDirectLineToken from './util/fetchDirectLineToken';
 import fetchSpeechServicesRegion from './util/fetchSpeechServicesRegion';
 import fetchSpeechServicesToken from './util/fetchSpeechServicesToken';
 import receiveActivity from './data/action/receiveActivity';
+import setDirectLine from './data/action/setDirectLine';
 
 const WEB_CHAT_BOX = css({
   fontSize: 20,
   height: 'calc(100% - 20px)',
   margin: 10,
-  position: 'fixed',
-  top: 0,
-  width: 320,
-
-  '&.centered': {
-    marginLeft: '50%',
-    left: -160,
-  },
+  width: 360,
 
   '&:not(.centered)': {
     right: 0
@@ -46,8 +40,7 @@ const WEB_CHAT_STYLE_OPTIONS = {
 
 export default function WebChat() {
   const dispatch = useDispatch();
-  const taskListVisibility = useSelector(({ taskListVisibility }) => taskListVisibility);
-  const [directLine, setDirectLine] = useState();
+  const { directLine, taskListVisibility } = useSelector(({ directLine, taskListVisibility }) => ({ directLine, taskListVisibility }));
   const [webSpeechPonyfillFactory, setWebSpeechPonyfillFactory] = useState();
   const handleIncomingActivity = useCallback(activity => dispatch(receiveActivity(activity)), [dispatch]);
   const [webChatStore] = useState(createStore({}, () => next => action => {
@@ -65,12 +58,12 @@ export default function WebChat() {
         region: speechServiceRegion
       });
 
-      setDirectLine(() => createDirectLine({ token: directLineToken }));
+      dispatch(setDirectLine(createDirectLine({ token: directLineToken })));
       setWebSpeechPonyfillFactory(() => webSpeechPonyfillFactory);
     })().catch(console.error.bind(console));
 
     return () => {};
-  }, [setDirectLine]);
+  }, [dispatch]);
 
   React.useLayoutEffect(() => {
     const sendBox = document.querySelector('[data-id="webchat-sendbox-input"]');

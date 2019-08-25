@@ -14,7 +14,55 @@ export default class Bot extends ActivityHandler {
     super();
 
     this.onMembersAdded(async (context, next) => {
-      await context.sendActivity('Hello, William!\n\nYour to-do list is empty, let\'s add something.');
+      await context.sendActivity([
+        'Hello, William!',
+        '',
+        'You can say:',
+        '',
+        '- What is on my list?',
+        '- I need to buy milk.',
+        '- Mark buy milk as completed.',
+        '',
+        'Let me find out what is on your list, hold on.'
+      ].join('\n'));
+
+      await context.sendActivity({ type: 'typing' });
+
+      await context.sendActivity({
+        name: 'redux select',
+        type: 'event',
+        value: {
+          state: 'welcome'
+        }
+      });
+
+      await next();
+    });
+
+    this.onEvent(async (context, next) => {
+      const { activity: { name, value } } = context;
+
+      if (name === 'redux state') {
+        const { state, store } = value;
+
+        switch (state) {
+          case 'welcome':
+            const incompletedTasks = store.tasks.filter(task => !task.completed);
+
+            if (incompletedTasks.length) {
+              await context.sendActivity([
+                `You have ${ incompletedTasks.length } tasks to work on:`,
+                '',
+                ...incompletedTasks.map(task => `- ${ task.text }`)
+              ].join('\n'));
+            } else {
+              await context.sendActivity('Your to-do list is empty, let\'s add something.');
+            }
+
+            break;
+        }
+      }
+
       await next();
     });
 

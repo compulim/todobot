@@ -33,9 +33,9 @@ const ROOT_CSS = css({
     border: 0,
     fontSize: 24,
     height: '100%',
+    marginLeft: 20,
     outline: 0,
     textAlign: 'left',
-    width: 380,
 
     '&:hover': {
       color: 'Red'
