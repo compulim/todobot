@@ -36,7 +36,7 @@ export default function App() {
   return (
     <div className={ROOT_CSS}>
       <div className="task-list">
-        <Tasks className={ TASKS_CSS + '' } />
+        <Tasks className={TASKS_CSS} />
         {/* <AddTaskBox /> */}
       </div>
       <WebChat />
