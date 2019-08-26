@@ -49,8 +49,6 @@ const WEB_CHAT_STYLE_SET = {
   }
 };
 
-console.warn(WEB_CHAT_STYLE_SET);
-
 export default function WebChat() {
   const dispatch = useDispatch();
   const { directLine, tasks } = useSelector(({ directLine, tasks }) => ({ directLine, tasks }));
