@@ -43,6 +43,17 @@ async function sendReduxEvent(context, action) {
   });
 }
 
+function humanJoin(array) {
+  const others = [...array];
+  const last = others.pop();
+
+  if (others.length) {
+    return [others.join(', '), last].join(' and ');
+  } else {
+    return last;
+  }
+}
+
 export default class Bot extends ActivityHandler {
   constructor() {
     super();
@@ -156,13 +167,18 @@ export default class Bot extends ActivityHandler {
           await context.sendActivity(`Deleting "${ existingTask.text }" from your list.`);
         }
       } else if (/^(show|what).*?(lists?|tasks?)[\.\?]?$/iu.test(activity.text)) {
+        const { tasks } = activity.channelData.reduxStore;
+        const completedTasks = tasks.filter(({ completed }) => completed);
+        const incompletedTasks = tasks.filter(({ completed }) => !completed);
+
         await context.sendActivity({
           attachments: [{
             contentType: 'x-todobot-tasks'
           }],
           speak: [
             'Here is your list.<break strength="medium" />',
-            activity.channelData.reduxStore.tasks.map(task => `${ task.text } is ${ task.completed ? 'done' : 'not done' }.`).join('\n<break strength="weak" />')
+            completedTasks.length ? humanJoin(completedTasks.map(({ text }) => `"${ text }"`)) + ` ${ completedTasks.length > 1 ? 'are' : 'is' } done.<break strength="medium" />` : '',
+            incompletedTasks.length ? 'You need to ' + humanJoin(incompletedTasks.map(({ text }) => `"${ text }"`)) + '.' : '',
           ].join(''),
           text: 'Here is your list.',
           type: 'message'

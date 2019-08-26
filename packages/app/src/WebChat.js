@@ -43,15 +43,13 @@ const WEB_CHAT_STYLE_OPTIONS = {
 const WEB_CHAT_STYLE_SET = {
   ...createStyleSet(WEB_CHAT_STYLE_OPTIONS),
   microphoneButton: {
-    '&.dictating > button': {
-      '&:active, &:focus, &:hover': {
-        '& svg': {
-          fill: '#F33'
-        }
-      }
+    '&.dictating > button svg': {
+      fill: '#F33 !important'
     }
   }
 };
+
+console.warn(WEB_CHAT_STYLE_SET);
 
 export default function WebChat() {
   const dispatch = useDispatch();
