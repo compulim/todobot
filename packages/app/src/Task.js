@@ -2,7 +2,7 @@ import { css } from 'glamor';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import Checkbox from './Checkbox';
 
