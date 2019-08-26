@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 import Checkbox from './Checkbox';
 
 import deleteTask from './data/action/deleteTask';
+import editTaskText from './data/action/editTaskText';
 import markTaskAsCompleted from './data/action/markTaskAsCompleted';
 import markTaskAsIncompleted from './data/action/markTaskAsIncompleted';
 
@@ -17,9 +18,14 @@ const ROOT_CSS = css({
   height: 60,
 
   '& > .text': {
+    backgroundColor: 'Transparent',
+    border: 0,
     flex: 1,
     fontFamily: '\'Segoe Script\', serif',
+    fontSize: 32,
+    outline: 0,
     overflow: 'hidden',
+    margin: 0,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
 
@@ -61,6 +67,10 @@ export default function Task({
     dispatch(deleteTask(taskId));
   }, [dispatch, taskId]);
 
+  const handleTextChange = useCallback(({ target: { value } }) => {
+    dispatch(editTaskText(taskId, value));
+  }, [dispatch, taskId]);
+
   const { completed } = task;
 
   return !!task && (
@@ -69,8 +79,12 @@ export default function Task({
         checked={task.completed}
         onChange={handleCompletedChange}
       />
-      {/* <code>{ task.id }</code>: { task.text } */}
-      <span className={classNames('text', { completed })}>{ task.text }</span>
+      <input
+        className={classNames('text', { completed })}
+        onChange={handleTextChange}
+        type="text"
+        value={ task.text }
+      />
       <button
         className="delete"
         onClick={handleDeleteClick}

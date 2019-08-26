@@ -3,6 +3,7 @@ import { compareTwoStrings } from 'string-similarity';
 
 import { ADD_TASK } from '../action/addTask';
 import { DELETE_TASK } from '../action/deleteTask';
+import { EDIT_TASK_TEXT } from '../action/editTaskText';
 import { MARK_TASK_AS_COMPLETED } from '../action/markTaskAsCompleted';
 import { MARK_TASK_AS_INCOMPLETED } from '../action/markTaskAsIncompleted';
 
@@ -34,6 +35,8 @@ export default function tasks(state = DEFAULT_STATE, { payload, type }) {
     }];
   } else if (type === DELETE_TASK) {
     state = updateIn(state, [selectTaskByPayload(payload)]);
+  } else if (type === EDIT_TASK_TEXT) {
+    state = updateIn(state, [({ id }) => id === payload.id, 'text'], () => payload.text);
   } else if (type === MARK_TASK_AS_COMPLETED) {
     state = updateIn(state, [selectTaskByPayload(payload), 'completed'], () => true);
   } else if (type === MARK_TASK_AS_INCOMPLETED) {
