@@ -1,9 +1,9 @@
 import { css } from 'glamor';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import './index.css';
+import createTaskId from './util/createTaskId';
 import Task from './Task';
 
 const ROOT_CSS = css({
@@ -15,11 +15,23 @@ const ROOT_CSS = css({
 export default function Tasks({
   className
 }) {
+  const [newTaskId, setNewTaskId] = useState(createTaskId());
   const tasks = useSelector(({ tasks }) => tasks);
+
+  useEffect(() => {
+    tasks.find(({ id }) => id === newTaskId) && setNewTaskId(createTaskId());
+
+    return () => {};
+  }, [newTaskId, tasks]);
+
+  const tasksWithNewTask = useMemo(() => [
+    ...tasks.filter(({ id }) => id !== newTaskId),
+    { id: newTaskId }
+  ], [newTaskId, tasks]);
 
   return (
     <ul className={ classNames(ROOT_CSS + '', className) }>
-      { tasks.map(({ id }) =>
+      { tasksWithNewTask.map(({ id }) =>
         <li key={id}>
           <Task taskId={ id } />
         </li>)

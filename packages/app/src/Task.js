@@ -2,10 +2,11 @@ import { css } from 'glamor';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import Checkbox from './Checkbox';
 
+import addTask from './data/action/addTask';
 import deleteTask from './data/action/deleteTask';
 import editTaskText from './data/action/editTaskText';
 import markTaskAsCompleted from './data/action/markTaskAsCompleted';
@@ -31,6 +32,11 @@ const ROOT_CSS = css({
 
     '&.completed': {
       textDecoration: 'line-through'
+    },
+
+    '&:placeholder-shown': {
+      color: 'Black',
+      opacity: .4
     }
   },
 
@@ -42,6 +48,10 @@ const ROOT_CSS = css({
     marginLeft: 20,
     outline: 0,
     textAlign: 'left',
+
+    '&:disabled': {
+      display: 'none',
+    },
 
     '&:hover': {
       color: 'Red'
@@ -68,25 +78,34 @@ export default function Task({
   }, [dispatch, taskId]);
 
   const handleTextChange = useCallback(({ target: { value } }) => {
-    dispatch(editTaskText(taskId, value));
-  }, [dispatch, taskId]);
+    if (!task) {
+      dispatch(addTask(taskId, value));
+    } else if (value) {
+      dispatch(editTaskText(taskId, value));
+    } else {
+      dispatch(deleteTask(taskId));
+    }
+  }, [dispatch, task, taskId]);
 
-  const { completed } = task;
+  const { completed = false } = task || {};
 
-  return !!task && (
+  return (
     <div className={ROOT_CSS}>
       <Checkbox
-        checked={task.completed}
+        checked={completed}
+        disabled={!task}
         onChange={handleCompletedChange}
       />
       <input
         className={classNames('text', { completed })}
         onChange={handleTextChange}
+        placeholder="Type your task"
         type="text"
-        value={ task.text }
+        value={ task ? task.text : '' }
       />
       <button
         className="delete"
+        disabled={!task}
         onClick={handleDeleteClick}
         type="button"
       >

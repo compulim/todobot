@@ -1,6 +1,7 @@
 import { css } from 'glamor';
-import React, { useCallback } from 'react';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import classNames from 'classnames';
+import React, { useCallback } from 'react';
 
 const HIT_SIZE = 60;
 const SIZE = 24;
@@ -9,6 +10,10 @@ const ROOT_CSS = css({
   height: HIT_SIZE,
   position: 'relative',
   width: HIT_SIZE,
+
+  '&.disabled': {
+    opacity: .3
+  },
 
   '& > *': {
     left: 0,
@@ -35,15 +40,17 @@ const ROOT_CSS = css({
 
 export default function Checkbox({
   checked,
+  disabled,
   onChange
 }) {
   const handleChange = useCallback(({ target: { checked } }) => onChange(checked), [onChange]);
 
   return (
-    <span className={ROOT_CSS}>
+    <span className={classNames(ROOT_CSS + '', { disabled })}>
       <Icon className="icon" iconName={checked ? 'CheckboxComposite' : 'Checkbox'} />
       <input
         checked={checked || false}
+        disabled={disabled}
         onChange={handleChange}
         type="checkbox"
       />

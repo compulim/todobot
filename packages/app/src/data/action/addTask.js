@@ -1,14 +1,11 @@
-import random from 'math-random';
+import createTaskId from '../../util/createTaskId';
 
 const ADD_TASK = 'ADD_TASK';
 
-export default function addTask(text) {
+export default function addTask(id = createTaskId(), text) {
   return {
     type: ADD_TASK,
-    payload: {
-      id: `t-${ random().toString(36).substr(2, 5) }`,
-      text
-    }
+    payload: { id, text }
   };
 }
 
