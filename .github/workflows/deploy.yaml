@@ -1,0 +1,33 @@
+name: Deploy to todobot2.azurewebsites.net
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checking out for ${{ github.ref }}
+        uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          docker build . -t builder
+          docker create --name builder-image builder
+          docker cp builder-image:/var/zipdeploy.zip .
+          docker rm builder-image
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: zipdeploy
+          path: zipdeploy.zip
+
+      - name: Publish to todobot2
+        uses: azure/webapps-deploy@v2.1
+        with:
+          app-name: todobot2
+          package: zipdeploy.zip
+          publish-profile: ${{ secrets.PUBLISH_PROFILE }}

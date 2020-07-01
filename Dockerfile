@@ -32,3 +32,8 @@ COPY --from=builder /var/build/sshd_config /etc/ssh/
 
 # Set up entrypoint
 ENTRYPOINT /usr/local/bin/init.sh
+
+RUN \
+  apt-get install -y zip \
+  && cd /var/bot/ \
+  && zip -1rq /var/zipdeploy.zip .
