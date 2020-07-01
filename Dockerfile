@@ -19,6 +19,7 @@ ENV SSH_PORT 2222
 COPY --from=builder /var/build/init.sh /usr/local/bin/
 COPY --from=builder /var/build/packages/bot/ /var/bot/
 COPY --from=builder /var/build/packages/app/build/ /var/bot/public/
+COPY --from=builder /var/build/azure/package.json /var/bot/
 
 RUN \
   apt-get update \
