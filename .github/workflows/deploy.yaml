@@ -25,9 +25,9 @@ jobs:
           name: zipdeploy
           path: zipdeploy.zip
 
-      - name: Publish to todobot2
+      - name: Publish to todobot
         uses: azure/webapps-deploy@v2.1
         with:
-          app-name: todobot2
+          app-name: todobot
           package: zipdeploy.zip
           publish-profile: ${{ secrets.PUBLISH_PROFILE }}
