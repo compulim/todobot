@@ -60,6 +60,7 @@ function trustedOrigin(origin) {
     || /^https:\/\/compulim\.github\.io(\/|$)/.test(origin)
     || /^https:\/\/microsoft\.github\.io(\/|$)/.test(origin)
     || /^https:\/\/todobot\.azurewebsites\.net(\/|$)/.test(origin)
+    || /^https:\/\/todobot2\.azurewebsites\.net(\/|$)/.test(origin)
     || /^https:\/\/webchat-todobot\.azurewebsites\.net(\/|$)/.test(origin)
 
     // This is CodePen
